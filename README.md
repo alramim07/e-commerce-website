@@ -1,59 +1,148 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Multi-Tier E-Commerce Web Platform & Shopping Cart Engine
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-%3E%3D8.1-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)]()
 
-## About Laravel
+A clean, full-stack **E-Commerce Storefront, Product Catalog & Cart Management Engine** built with **Laravel 10** and **PHP 8.1+**. Features hierarchical product category navigation, a stateful shopping cart pipeline with asynchronous quantity adjustment and line-item recalculation, multi-tier user role authentication (`auth.role`), and dedicated merchant administrative management.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🏛️ Shopping Cart & Order Lifecycle
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```mermaid
+flowchart TD
+    subgraph Storefront["🛍️ Customer Shopping Journey"]
+        HOME["Home & Shop Showcase (`/shop`)"]
+        DETAIL["Product Detail & Image Gallery"]
+        CART_ADD["Add to Cart (`/add/cart`)"]
+    end
 
-## Learning Laravel
+    subgraph Cart_Engine["🛒 Stateful Cart Pipeline"]
+        SESSION_CART["Cart Session / Database Sync"]
+        QTY_UPDATE["Live Quantity Recalculation (`/cart/update`)"]
+        LINE_REMOVE["Item Removal & Subtotal Update (`/cart/remove`)"]
+        PAYOUT["Total Payout Calculation (`/total/payout`)"]
+    end
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+    subgraph Auth_Guard["🔐 Multi-Tier Auth & Guard"]
+        ROLE_CHECK["Role Gatekeeper (`auth.role:2,3`)"]
+        CHECKOUT["Order Checkout Flow (`/checkout`)"]
+    end
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    HOME --> DETAIL
+    DETAIL --> CART_ADD
+    CART_ADD --> SESSION_CART
+    SESSION_CART --> QTY_UPDATE
+    QTY_UPDATE --> PAYOUT
+    SESSION_CART --> LINE_REMOVE
+    PAYOUT --> ROLE_CHECK
+    ROLE_CHECK --> CHECKOUT
+```
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🌟 Core System Modules
 
-### Premium Partners
+### 1. 🛍️ Product Catalog & Taxonomy Navigation
+- **Hierarchical Classification:** Relational database structuring (`Category` has many `SubCategory`, which has many `Product`).
+- **Interactive Shop Directory:** Filterable product listings with real-time stock availability, featured tags, and product detail viewports.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. 🛒 High-Speed Shopping Cart Engine
+- **Transactional Cart Operations:** Powered by `CartController` handling instant cart addition, quantity updates, line-item purging, and dynamic order subtotal/tax calculations.
+- **Persistent Cart State:** Maintains customer shopping carts across sessions.
 
-## Contributing
+### 3. 🔐 Multi-Tier Role-Based Authentication
+- **Segmented Route Protection:** Middleware (`auth.role`) guarding customer checkout and administrative control centers.
+- **Dedicated Portals:**
+  - **Customer Portal:** Registration (`/user/register`), secure login (`/user/login`), personal order tracking.
+  - **Merchant Admin:** Staff onboarding (`/admin/register`), administrative session login (`/admin/login`), and product catalog CRUD.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠️ Technology Stack
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Layer | Technologies |
+|---|---|
+| **Core Framework** | Laravel 10.x, PHP 8.1 / 8.2 |
+| **Frontend UI** | Blade Templating Engine, Tailwind CSS, JavaScript |
+| **Authentication** | Multi-Guard Authentication with Role-Based Middleware (`auth.role`) |
+| **Database** | MySQL 8.0 (Relational schema with foreign key cascades) |
+| **Asset Pipeline** | Vite |
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📂 Domain Layout
 
-## License
+```
+e-commerce-website/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── HomeController.php             # Public showcase & catalog
+│   │   │   ├── CartController.php             # Stateful cart operations & payout
+│   │   │   ├── UserLoginController.php        # Customer authentication
+│   │   │   ├── UserRegisterController.php     # Customer registration
+│   │   │   └── Admin/                         # Admin authentication & catalog CRUD
+│   │   └── Middleware/
+│   │       └── RoleMiddleware.php             # Multi-tier role authorization
+│   └── Models/
+│       ├── Cart.php                           # Active customer cart items
+│       ├── Category.php                       # Primary parent categories
+│       ├── SubCategory.php                    # Nested sub-classifications
+│       ├── Product.php                        # Master product model
+│       └── User.php                           # Customer & merchant accounts
+├── routes/
+│   └── web.php                                # Route declarations
+└── composer.json
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## ⚙️ Local Development & Quick Start
+
+### Prerequisites
+- **PHP:** `>= 8.1` (Extensions: `pdo_mysql`, `mbstring`, `openssl`, `curl`)
+- **Composer:** `>= 2.2`
+- **Node.js & NPM:** `Node 18+` / `NPM 9+`
+- **Database:** MySQL 8.0+
+
+### Setup Instructions
+
+```bash
+# 1. Clone repository
+git clone https://github.com/alramim07/e-commerce-website.git
+cd e-commerce-website
+
+# 2. Install PHP and NPM dependencies
+composer install
+npm install
+
+# 3. Environment configuration
+cp .env.example .env
+php artisan key:generate
+
+# 4. Database configuration in .env
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=ecommerce_db
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# 5. Run database migrations & seed demo products
+php artisan migrate --seed
+
+# 6. Build assets & start server
+npm run build
+php artisan serve
+```
+
+Access the storefront at: **`http://127.0.0.1:8000`**
+
+---
+
+## 📄 License
+This project is open-source software licensed under the [MIT License](LICENSE).
